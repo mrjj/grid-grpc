@@ -1,0 +1,42 @@
+{
+  "name": "grid-grpc",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ilya Kutukov",
+    "email": "post.ilya@gmail.com"
+  },
+  "description": "GRPC Grid service manager",
+  "private": true,
+  "license": "UNLICENSED",
+  "homepage": "https://bitbucket.org/anymetrica/grpc-browser",
+  "main": "./src/cli",
+  "directories": {
+    "protos": "protos"
+  },
+  "scripts": {
+    "make:client:web": "./src/cli.js gen ./example/echo.proto ./dist/grpcClient.js",
+    "test": "node ./example/server.js",
+    "install": "npm run make:client:web",
+    "lint": "eslint src",
+    "eslint": "npm run lint"
+  },
+  "dependencies": {
+    "express": "4.16.4",
+    "express-ws": "4.0.0",
+    "google-protobuf": "3.6.1",
+    "grpc": "1.15.1",
+    "helmet": "3.14.0",
+    "http-proxy-middleware": "0.19.0",
+    "mustache": "3.0.0",
+    "pino": "5.8.0",
+    "pino-pretty": "2.2.3",
+    "protobufjs": "6.8.8",
+    "yargs": "12.0.2",
+    "@grpc/proto-loader": "latest"
+  },
+  "devDependencies": {
+    "eslint": "5.8.0",
+    "babel-eslint": "10.0.1",
+    "eslint-plugin-babel": "5.2.1"
+  }
+}
