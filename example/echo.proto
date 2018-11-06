@@ -34,8 +34,8 @@ message ServerStreamingEchoResponse {
   string message = 1;
 }
 
+
 service EchoService {
-  rpc Echo(EchoRequest) returns (EchoResponse);
-  rpc ServerStreamingEcho(ServerStreamingEchoRequest)
-      returns (stream ServerStreamingEchoResponse);
+  rpc Echo (EchoRequest) returns (EchoResponse);
+  rpc ServerStreamingEcho (ServerStreamingEchoRequest) returns (stream ServerStreamingEchoResponse);
 }

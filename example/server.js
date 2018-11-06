@@ -78,7 +78,6 @@ const DEBUG = false;
 const GRPC_UPSTREAM_CONF = {
   service: 'EchoService',
   serviceProtoPath: './example/echo.proto',
-  baseProtoPath: './example',  // Not mandatory
   pkg: 'echo',
   wsSchema: 'ws',
   port: 8080,

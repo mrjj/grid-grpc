@@ -1,6 +1,6 @@
 {
   "name": "grid-grpc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Ilya Kutukov",
     "email": "post.ilya@gmail.com"
@@ -8,11 +8,16 @@
   "description": "GRPC Grid service manager",
   "private": true,
   "license": "UNLICENSED",
-  "homepage": "https://bitbucket.org/anymetrica/grpc-browser",
+  "homepage": "https://bitbucket.org/anymetrics/grpc-browser",
   "main": "./src/cli",
   "directories": {
     "protos": "protos"
   },
+  "files": [
+    "src/",
+    "example/",
+    "proto/"
+  ],
   "scripts": {
     "make:client:web": "./src/cli.js gen ./example/echo.proto ./dist/grpcClient.js",
     "test": "node ./example/server.js",
@@ -21,18 +26,22 @@
     "eslint": "npm run lint"
   },
   "dependencies": {
+    "@grpc/proto-loader": "latest",
     "express": "4.16.4",
     "express-ws": "4.0.0",
     "google-protobuf": "3.6.1",
     "grpc": "1.15.1",
     "helmet": "3.14.0",
     "http-proxy-middleware": "0.19.0",
+    "jsonwebtoken": "^8.3.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
     "mustache": "3.0.0",
+    "pify": "latest",
     "pino": "5.8.0",
     "pino-pretty": "2.2.3",
     "protobufjs": "6.8.8",
-    "yargs": "12.0.2",
-    "@grpc/proto-loader": "latest"
+    "yargs": "12.0.2"
   },
   "devDependencies": {
     "eslint": "5.8.0",

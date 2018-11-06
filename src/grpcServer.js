@@ -12,7 +12,6 @@ const logger = require('./logger')({ name: 'grpcServer' });
  * @param config {Object<{
  *    service: string,
  *    serviceProtoPath: string,
- *    baseProtoPath: string,
  *    pkg: string,
  *    schema: 'ws'|'wss',
  *    grpc: string,
@@ -39,7 +38,8 @@ const getGrpcServer = (config, autoStart = false) => {
     proto[config.service].service,
     config.handlers,
   );
-  Object.assign(server, config);
+  server.host = config.host;
+  server.port = config.port;
   server.bind(`${server.host}:${server.port}`, grpc.ServerCredentials.createInsecure());
   const vanillaStartFn = server.start;
   function startFn(...args) {
