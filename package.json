@@ -1,6 +1,6 @@
 {
   "name": "grid-grpc",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "Ilya Kutukov",
     "email": "post.ilya@gmail.com"
@@ -9,19 +9,19 @@
   "private": true,
   "license": "UNLICENSED",
   "homepage": "https://bitbucket.org/anymetrics/grpc-browser",
-  "main": "./src/cli",
+  "main": "./src/",
   "directories": {
     "protos": "protos"
   },
   "files": [
     "src/",
     "example/",
-    "proto/"
+    "proto/",
+    "bin/grid-grpc"
   ],
   "scripts": {
-    "make:client:web": "./src/cli.js gen ./example/echo.proto ./dist/grpcClient.js",
+    "make:client:web": "grid-grpc gen -q ./example/echo.proto ./dist/grpcClient.js",
     "test": "node ./example/server.js",
-    "install": "npm run make:client:web",
     "lint": "eslint src",
     "eslint": "npm run lint"
   },
@@ -47,5 +47,8 @@
     "eslint": "5.8.0",
     "babel-eslint": "10.0.1",
     "eslint-plugin-babel": "5.2.1"
+  },
+  "bin": {
+    "grid-grpc": "bin/grid-grpc"
   }
 }

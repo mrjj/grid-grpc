@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * @fileOverview: main CLI file
+ */
+const path = require('path');
+const fs = require('fs');
+const Yargs = require('yargs');
+
+const { generateClientScript } = require("../src/clientScriptGenerator");
+const {addPrefixExt, makePath} = require('../src/utils');
+const logger = require('../src/logger')({name: 'grpc-cli'});
+
+const {DEFAULT_CLI_CONFIG} = require('../src/constants');
+
+
+// argv call have hidden side-effect
+// noinspection JSUnusedLocalSymbols
+const argv = Yargs
+  .usage('$0 <cmd> -q [args]')
+  .command(
+    'gen [inputPath] [outputPath] [protobufJsLibDistPath]',
+    'generate web client for GRPC based on .proto file',
+    (yargs) => {
+      yargs
+        .boolean('quiet').alias('q', 'quiet')
+        .positional('inputPath', {
+          type: 'string',
+          default: DEFAULT_CLI_CONFIG.inputProtoFilePath,
+          describe: 'root `.proto` file with `service` declarations'
+        })
+        .positional('outputPath', {
+          type: 'string',
+          default: DEFAULT_CLI_CONFIG.outputJsFilePath,
+          describe: 'grpc .js client output path'
+        })
+        .positional('protobufJsLibDistPath', {
+          type: 'string',
+          default: DEFAULT_CLI_CONFIG.protobufJsLibDistPath,
+          describe: 'protobuf.min.js path'
+        })
+    },
+    async ({inputPath, outputPath, protobufJsLibDistPath, quiet}) => {
+      if (quiet) {
+        logger.level = 'info'
+      } else {
+        logger.level = 'debug';
+      }
+      const fullInputPath = path.join(process.cwd(), inputPath);
+      const fullOutputPath = path.join(process.cwd(), outputPath);
+      const fullProtobufJsLibDistPath = path.join(process.cwd(), protobufJsLibDistPath);
+      logger.debug(`Making JS client: ${fullInputPath} -> ${fullOutputPath}`);
+      makePath(path.dirname(fullOutputPath));
+
+      /* Run */
+      try {
+        logger.debug(`Building using protobufjs library file: ${fullProtobufJsLibDistPath}`);
+        const apiScript = await generateClientScript(fullInputPath, fullProtobufJsLibDistPath);
+        if (fs.existsSync(fullOutputPath)) {
+          const prevPath = addPrefixExt(fullOutputPath, 'old');
+          if (DEFAULT_CLI_CONFIG.keepOldBuilds) {
+            logger.debug(`Preserving existing file: ${fullOutputPath} -> ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
+            if (fs.existsSync(prevPath)) {
+              logger.debug(`Deleting existing old build file: ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
+              fs.unlinkSync(prevPath)
+            }
+            fs.renameSync(fullOutputPath, prevPath)
+          } else {
+            if (fs.existsSync(fullOutputPath)) {
+              logger.debug(`Deleting existing file: ${fullOutputPath}`);
+              fs.unlinkSync(fullOutputPath)
+            }
+          }
+        }
+        fs.writeFileSync(fullOutputPath, apiScript)
+      } catch (e) {
+        logger.error(e);
+        logger.error(`ERROR:\n${e.toString()}`)
+      }
+      logger.debug(`Done! Result saved to:`);
+      logger.info(fullOutputPath)
+    }
+  ).argv;
+
+// module.exports = generateClientScript;

@@ -61,7 +61,7 @@ const DEFAULT_LOGGER_CONFIG = {
 
 const DEFAULT_JWT_SETTINGS = {
   secret: null,
-}
+};
 
 module.exports = {
   DEFAULT_ENDPOINT_CONF,
