@@ -1,17 +1,16 @@
-const db = require('./db')
-
+/* @flow */
 const asCallbackFn = (asyncFn) =>
-  (call, callback) => asyncFn(call).then(res => callback(null, res)).catch(e => callback(e))
+  (call, callback) => asyncFn(call).then(res => callback(null, res)).catch(e => callback(e));
 
 const cbHandlers = (handlers) => {
-  const res = {}
+  const res = {};
   for (let k in handlers) {
     if (handlers.hasOwnProperty(k)) {
       res[k] = asCallbackFn(handlers[k])
     }
   }
   return res
-}
+};
 
 const asPromiseFn = (fn) => async (input) => (new Promise(
   (resolve, reject) => {
@@ -22,17 +21,12 @@ const asPromiseFn = (fn) => async (input) => (new Promise(
       },
     )
   }
-))
+));
 const promiseClientCall = (client, method, args) => new Promise((resolve, reject) => {
   client[method](args, (e, res) => {if (e) {reject(e)} else {resolve(res)}})
-})
-const wait = (timeMs) => new Promise((resolve) => setTimeout(resolve, timeMs))
+});
 
-const pgClientQueryAsync = (q, options = []) => new Promise((resolve, reject) => {
-  db().then(client => {
-    client.query(q, options, (e, res) => {if (e) {reject(e)} else {resolve(res)}})
-  }).catch(e => {throw e})
-})
+const wait = (timeMs) => new Promise((resolve) => setTimeout(resolve, timeMs));
 
 module.exports = {
   promiseClientCall,
@@ -41,4 +35,4 @@ module.exports = {
   asCallbackFn,
   pgClientQueryAsync,
   wait,
-}
+};

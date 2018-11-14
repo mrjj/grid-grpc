@@ -52,7 +52,7 @@ const DEFAULT_CLI_CONFIG = {
   inputProtoFilePath: './proto/service.proto',
   outputJsFilePath: './dist/grpcClient.js',
   protobufJsLibDistPath: './node_modules/protobufjs/dist/minimal/protobuf.min.js',
-  keepOldBuilds: true,
+  keepOldBuilds: false,
 };
 
 const DEFAULT_LOGGER_CONFIG = {
