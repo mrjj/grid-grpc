@@ -18,16 +18,14 @@ const {DEFAULT_CLI_CONFIG} = require('../src/constants');
 // argv call have hidden side-effect
 // noinspection JSUnusedLocalSymbols
 const argv = Yargs
-  .usage('$0 <cmd> --quiet --keep-old-builds [args]')
+  .usage('$0 --quiet --keep-old-builds <cmd> [inputPath] [outputPath] [protobufJsLibDistPath]')
+  .boolean('quiet').alias('q', 'quiet')
+  .boolean('keep-old-builds').alias('o', 'keep-old-builds')
   .command(
     'gen [inputPath] [outputPath] [protobufJsLibDistPath]',
     'generate web client for GRPC based on .proto file',
     (yargs) => {
       yargs
-        .boolean('quiet')
-          .alias('q', 'quiet')
-        .boolean('keep-old-builds', {keepOldBuilds: DEFAULT_CLI_CONFIG.keepOldBuilds})
-          .alias('o', 'keep-old-builds')
         .positional('inputPath', {
           type: 'string',
           default: DEFAULT_CLI_CONFIG.inputProtoFilePath,
@@ -44,8 +42,9 @@ const argv = Yargs
           describe: 'protobuf.min.js path'
         })
     },
-    async ({inputPath, outputPath, protobufJsLibDistPath, quiet, keepOldBuilds}) => {
-      if (quiet) {
+    async (argv) => {
+      const {inputPath, outputPath, protobufJsLibDistPath, quiet, keepOldBuilds} = argv
+      if (quiet === true) {
         logger.level = 'info'
       } else {
         logger.level = 'debug';
@@ -62,7 +61,7 @@ const argv = Yargs
         const apiScript = await generateClientScript(fullInputPath, fullProtobufJsLibDistPath);
         if (fs.existsSync(fullOutputPath)) {
           const prevPath = addPrefixExt(fullOutputPath, 'old');
-          if (keepOldBuilds) {
+          if (keepOldBuilds === true) {
             logger.debug(`Preserving existing file: ${fullOutputPath} -> ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
             if (fs.existsSync(prevPath)) {
               logger.debug(`Deleting existing old build file: ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
