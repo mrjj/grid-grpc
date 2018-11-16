@@ -33,6 +33,5 @@ module.exports = {
   asPromiseFn,
   cbHandlers,
   asCallbackFn,
-  pgClientQueryAsync,
   wait,
 };
