@@ -3,6 +3,7 @@
  */
 
 const grpc = require('grpc');
+const get = require('lodash.get');
 const protoLoader = require('@grpc/proto-loader');
 
 const logger = require('./logger')({ name: 'grpcServer' });
@@ -32,7 +33,7 @@ const getGrpcServer = (config, autoStart = false) => {
       oneofs: true,
     },
   );
-  const proto = grpc.loadPackageDefinition(packageDefinition)[config.pkg];
+  const proto = get(grpc.loadPackageDefinition(packageDefinition), config.pkg);
   const server = new grpc.Server();
   server.addService(
     proto[config.service].service,
