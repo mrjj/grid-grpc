@@ -1,4 +1,3 @@
-'use strict';
 const path = require('path');
 const fs = require('fs');
 
@@ -22,7 +21,7 @@ const addPrefixExt = (p, prefix = 'old') => {
     prefix,
     pathParts[pathParts.length - 1],
   ].join('.');
-  return path.join(dn, newFn)
+  return path.join(dn, newFn);
 };
 
 
@@ -31,15 +30,16 @@ const addPrefixExt = (p, prefix = 'old') => {
  * @param pathToCreate
  * @return {string}
  */
-const makePath = (pathToCreate) => pathToCreate.split(path.sep).reduce(
+const makePath = pathToCreate => pathToCreate.split(path.sep).reduce(
   (currentPath, folder) => {
-    currentPath += folder + path.sep;
-    if (!fs.existsSync(currentPath)) {
-      fs.mkdirSync(currentPath)
+    let p = currentPath;
+    p += folder + path.sep;
+    if (!fs.existsSync(p)) {
+      fs.mkdirSync(p);
     }
-    return currentPath
+    return p;
   },
-  ''
+  '',
 );
 
 module.exports = { addPrefixExt, makePath };

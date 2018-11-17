@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-unused-vars,no-eval,no-useless-escape,no-restricted-syntax */
+
 /**
  * @fileOverview: make GRPC client js file
  * inspired by Danby by ericbets
@@ -58,49 +60,59 @@ const METHOD_TEMPLATE = `      {{methodName}}: data => new Promise((resolve, rej
       }),
 `;
 const searchService = (el = {}, services = {}) => {
+  let sc = services;
   if (el && el.nested) {
     const f = el.nested;
-    for (let field in f) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const field in f) {
       if (field !== 'parent') {
+        // eslint-disable-next-line no-prototype-builtins
         if (f.hasOwnProperty(field)) {
           if (f[field] instanceof protobuf.Service) {
-            services[field] = f[field];
+            sc[field] = f[field];
           } else {
-            services = searchService(f[field], services);
+            sc = searchService(f[field], services);
           }
         }
       }
     }
   }
-  return services;
+  return sc;
 };
 
-const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrint = false, wsSchema = DEFAULT_ENDPOINT_CONF.wsSchema) => {
-  Mustache.escape = (v) => v;
+const generateClientScript = async (
+  protoPath,
+  protobufJsLibDistPath,
+  prettyPrint = false,
+  wsSchema = DEFAULT_ENDPOINT_CONF.wsSchema,
+) => {
+  Mustache.escape = v => v;
   const root = await protobuf.load(protoPath);
   const servicesDict = searchService(root);
   let servicesStr = '';
-  for (let serviceName in servicesDict) {
+  for (const serviceName in servicesDict) {
+    // eslint-disable-next-line no-prototype-builtins
     if (serviceName && servicesDict.hasOwnProperty(serviceName)) {
       const svc = root.lookupService(serviceName);
-      const methods = svc['methods'];
+      const methods = svc.methods;
       let methodsStr = '';
-      for (let methodName in methods) {
+      for (const methodName in methods) {
+        // eslint-disable-next-line no-prototype-builtins
         if (methods.hasOwnProperty(methodName)) {
           const method = methods[methodName];
           const view = {
             methodName,
             serviceName,
             metadata: JSON.stringify({}),
-            requestType: method['requestType'],
-            responseType: method['responseType'],
+            requestType: method.requestType,
+            responseType: method.responseType,
             wsSchema,
           };
           methodsStr += Mustache.render(METHOD_TEMPLATE, view);
         }
       }
       servicesStr += Mustache.render(SERVICE_TEMPLATE, {
-        serviceName: serviceName,
+        serviceName,
         methods: methodsStr,
       });
     }
@@ -110,9 +122,13 @@ const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrin
     wsSchema: DEFAULT_ENDPOINT_CONF.wsSchema,
     grpcMountUrlPath: DEFAULT_ENDPOINT_CONF.grpcMountUrlPath,
     protoJSON: prettyPrint
-      ? JSON.stringify(root.toJSON(), null, 2).split('\n').join('\n  ').replace('`', '\\`')
-      : JSON.stringify(root.toJSON()).replace('`', '\\`'),
-    library: fs.readFileSync(protobufJsLibDistPath)
+      ? JSON.stringify(root.toJSON(), null, 2)
+        .split('\n')
+        .join('\n  ')
+        .replace('`', '\\`')
+      : JSON.stringify(root.toJSON())
+        .replace('`', '\\`'),
+    library: fs.readFileSync(protobufJsLibDistPath),
   });
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "grid-grpc",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "author": {
     "name": "Ilya Kutukov",
     "email": "post.ilya@gmail.com"
@@ -20,9 +20,9 @@
   ],
   "scripts": {
     "make:client:web": "grid-grpc gen -q ./example/echo.proto ./dist/grpcClient.js",
-    "test": "node ./example/server.js",
-    "lint": "eslint src",
-    "eslint": "npm run lint"
+    "dev": "node ./example/server.js",
+    "test": "jest",
+    "lint": "eslint src"
   },
   "dependencies": {
     "@grpc/proto-loader": "latest",
@@ -48,10 +48,13 @@
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "15.1.0",
     "eslint-plugin-babel": "5.2.1",
+    "eslint-plugin-react": "7.11.1",
     "eslint-plugin-eslint-comments": "^2.0.1",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jasmine": "2.10.1",
-    "eslint-plugin-jest": "^21.5.0"
+    "eslint-plugin-jest": "^21.5.0",
+    "eslint-plugin-jsx-a11y": "6.1.2",
+    "jest": "23.6.0"
   },
   "bin": {
     "grid-grpc": "bin/grid-grpc"

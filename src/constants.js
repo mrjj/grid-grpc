@@ -4,7 +4,10 @@
 
 /**
  * @constant DEFAULT_ENDPOINT_CONF - Default endpoint config
- * @type {{host: string, port: number, tlsPort: number, httpSchema: string, wsSchema: string, grpcMountUrlPath: string}}
+ * @type {{
+ *    host: string, port: number, tlsPort: number,
+ *    httpSchema: string, wsSchema: string, grpcMountUrlPath: string
+ * }}
  */
 const DEFAULT_ENDPOINT_CONF = {
   host: 'localhost',
@@ -29,7 +32,10 @@ const DEFAULT_WEB_UPSTREAM_CONF = {
 
 /**
  * @const DEFAULT_GRPC_UPSTREAM_CONF - Default (HTTP|WS|GRPC) proxy endpoint config
- * @type {{service: string, serviceProtoPath: string, baseProtoPath: null, pkg: string, wsSchema: string, port: number, host: string, handlers: {}}}
+ * @type {{
+ *  service: string, serviceProtoPath: string, baseProtoPath: null, pkg: string,
+ *  wsSchema: string, port: number, host: string, handlers: {}
+ * }}
  */
 const DEFAULT_GRPC_UPSTREAM_CONF = {
   service: 'Service',
@@ -56,7 +62,7 @@ const DEFAULT_CLI_CONFIG = {
 };
 
 const DEFAULT_LOGGER_CONFIG = {
-  prettyPrint: true
+  prettyPrint: true,
 };
 
 const DEFAULT_JWT_SETTINGS = {
@@ -69,5 +75,5 @@ module.exports = {
   DEFAULT_GRPC_UPSTREAM_CONF,
   DEFAULT_CLI_CONFIG,
   DEFAULT_LOGGER_CONFIG,
-  DEFAULT_JWT_SETTINGS
+  DEFAULT_JWT_SETTINGS,
 };

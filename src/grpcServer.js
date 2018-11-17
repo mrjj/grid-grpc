@@ -22,7 +22,7 @@ const logger = require('./logger')({ name: 'grpcServer' });
  * @return {module:grpc.Server}
  */
 const getGrpcServer = (config, autoStart = false) => {
-  logger.info(`Loading service config "${config.pkg}.${config.service}" from "${config.serviceProtoPath}"`)
+  logger.info(`Loading service config "${config.pkg}.${config.service}" from "${config.serviceProtoPath}"`);
   const packageDefinition = protoLoader.loadSync(
     config.serviceProtoPath,
     {

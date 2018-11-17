@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+
 
 /**
  * @fileOverview: main CLI file
@@ -8,20 +8,24 @@ const path = require('path');
 const fs = require('fs');
 const Yargs = require('yargs');
 
-const {generateClientScript} = require("../src/clientScriptGenerator");
-const {addPrefixExt, makePath} = require('../src/utils');
-const logger = require('../src/logger')({name: 'grpc-cli'});
+const { generateClientScript } = require('../src/clientScriptGenerator');
+const { addPrefixExt, makePath } = require('../src/utils');
+const logger = require('../src/logger')({ name: 'grpc-cli' });
 
-const {DEFAULT_CLI_CONFIG} = require('../src/constants');
+const { DEFAULT_CLI_CONFIG } = require('../src/constants');
 
 
 // argv call have hidden side-effect
 // noinspection JSUnusedLocalSymbols
+// eslint-disable-next-line no-unused-vars
 const argv = Yargs
   .usage('$0 --quiet --keep-old-builds <cmd> [inputPath] [outputPath] [protobufJsLibDistPath]')
-  .boolean('quiet').alias('q', 'quiet')
-  .boolean('pretty-print-json').alias('p', 'pretty-print-json')
-  .boolean('keep-old-builds').alias('o', 'keep-old-builds')
+  .boolean('quiet')
+  .alias('q', 'quiet')
+  .boolean('pretty-print-json')
+  .alias('p', 'pretty-print-json')
+  .boolean('keep-old-builds')
+  .alias('o', 'keep-old-builds')
   .command(
     'gen [inputPath] [outputPath] [protobufJsLibDistPath]',
     'generate web client for GRPC based on .proto file',
@@ -30,23 +34,30 @@ const argv = Yargs
         .positional('inputPath', {
           type: 'string',
           default: DEFAULT_CLI_CONFIG.inputProtoFilePath,
-          describe: 'root `.proto` file with `service` declarations'
+          describe: 'root `.proto` file with `service` declarations',
         })
         .positional('outputPath', {
           type: 'string',
           default: DEFAULT_CLI_CONFIG.outputJsFilePath,
-          describe: 'grpc .js client output path'
+          describe: 'grpc .js client output path',
         })
         .positional('protobufJsLibDistPath', {
           type: 'string',
           default: DEFAULT_CLI_CONFIG.protobufJsLibDistPath,
-          describe: 'protobuf.min.js path'
-        })
+          describe: 'protobuf.min.js path',
+        });
     },
-    async (argv) => {
-      const {inputPath, outputPath, protobufJsLibDistPath, quiet, keepOldBuilds, prettyPrintJson} = argv
+    async (argvCmd) => {
+      const {
+        inputPath,
+        outputPath,
+        protobufJsLibDistPath,
+        quiet,
+        keepOldBuilds,
+        prettyPrintJson,
+      } = argvCmd;
       if (quiet === true) {
-        logger.level = 'info'
+        logger.level = 'info';
       } else {
         logger.level = 'debug';
       }
@@ -59,31 +70,30 @@ const argv = Yargs
       /* Run */
       try {
         logger.debug(`Building using protobufjs library file: ${fullProtobufJsLibDistPath}`);
-        const apiScript = await generateClientScript(fullInputPath, fullProtobufJsLibDistPath);
+        const apiScript = await generateClientScript(
+          fullInputPath, fullProtobufJsLibDistPath, prettyPrintJson);
         if (fs.existsSync(fullOutputPath)) {
           const prevPath = addPrefixExt(fullOutputPath, 'old');
           if (keepOldBuilds === true) {
             logger.debug(`Preserving existing file: ${fullOutputPath} -> ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
             if (fs.existsSync(prevPath)) {
               logger.debug(`Deleting existing old build file: ${prevPath} (to disable this set "DEFAULT_CLI_CONFIG.keepOldBuilds=false")`);
-              fs.unlinkSync(prevPath)
+              fs.unlinkSync(prevPath);
             }
-            fs.renameSync(fullOutputPath, prevPath)
-          } else {
-            if (fs.existsSync(fullOutputPath)) {
-              logger.debug(`Deleting existing file: ${fullOutputPath}`);
-              fs.unlinkSync(fullOutputPath)
-            }
+            fs.renameSync(fullOutputPath, prevPath);
+          } else if (fs.existsSync(fullOutputPath)) {
+            logger.debug(`Deleting existing file: ${fullOutputPath}`);
+            fs.unlinkSync(fullOutputPath);
           }
         }
-        fs.writeFileSync(fullOutputPath, apiScript)
+        fs.writeFileSync(fullOutputPath, apiScript);
       } catch (e) {
         logger.error(e);
-        logger.error(`ERROR:\n${e.toString()}`)
+        logger.error(`ERROR:\n${e.toString()}`);
       }
-      logger.debug(`Done! Result saved to:`);
-      logger.info(fullOutputPath)
-    }
+      logger.debug('Done! Result saved to:');
+      logger.info(fullOutputPath);
+    },
   ).argv;
 
 // module.exports = generateClientScript;

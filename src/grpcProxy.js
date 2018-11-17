@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+
+/* eslint-disable no-unused-vars,no-eval */
 /**
  * Based in Danby proxy by `ericbets`
  * https://github.com/ericbets/danby
@@ -14,6 +16,7 @@ const grpc = require('grpc');
 const helmet = require('helmet');
 const protobuf = require('protobufjs');
 const Logger = require('./logger');
+
 const logger = Logger({ name: 'grpcProxy' });
 
 const { DEFAULT_ENDPOINT_CONF, DEFAULT_WEB_UPSTREAM_CONF, DEFAULT_GRPC_UPSTREAM_CONF } = require('./constants');
@@ -21,26 +24,29 @@ const { DEFAULT_ENDPOINT_CONF, DEFAULT_WEB_UPSTREAM_CONF, DEFAULT_GRPC_UPSTREAM_
 // Global that will be called from eval executions
 const services = {};
 
-const getSvcRemote = (svcName) => `services['${svcName}'].remote.${svcName}`;
+const getSvcRemote = svcName => `services['${svcName}'].remote.${svcName}`;
 
-const getSvcConnect = (svcName) => `services['${svcName}'].grpc`;
+const getSvcConnect = svcName => `services['${svcName}'].grpc`;
 
-const searchServices = (el = {}, services = {}) => {
+const searchServices = (el = {}, servicesInput = {}) => {
+  let sc = servicesInput || {};
   if (el && el.nested) {
     const f = el.nested;
+    // eslint-disable-next-line no-restricted-syntax
     for (const field in f) {
       if (field !== 'parent') {
+        // eslint-disable-next-line no-prototype-builtins
         if (f.hasOwnProperty(field)) {
           if (f[field] instanceof protobuf.Service) {
-            services[field] = f[field];
+            sc[field] = f[field];
           } else {
-            services = searchServices(f[field], services);
+            sc = searchServices(f[field], sc);
           }
         }
       }
     }
   }
-  return services;
+  return sc;
 };
 
 /**
@@ -67,7 +73,7 @@ const runProxy = async (runConfig = {}) => {
       const conf = Object.assign({}, DEFAULT_GRPC_UPSTREAM_CONF, grpcUpstreamConf);
       const grpcUpstreamStr = `${conf.wsSchema}://${conf.host}:${conf.port}`;
       endpointsDescription.push(
-        `        ${grpcUpstreamStr}  ->  ${endpointGrpcPathStr}${endpointConf.grpcMountUrlPath}    ## "${conf.pkg}.${conf.service}" GRPC proxy`
+        `        ${grpcUpstreamStr}  ->  ${endpointGrpcPathStr}${endpointConf.grpcMountUrlPath}    ## "${conf.pkg}.${conf.service}" GRPC proxy`,
       );
 
       const proto = protobuf.loadSync(grpcUpstreamConf.serviceProtoPath);
@@ -75,7 +81,7 @@ const runProxy = async (runConfig = {}) => {
       const svc = servicesDict[grpcUpstreamConf.service];
       // noinspection JSUnusedLocalSymbols
       const methodNames = Object.keys(svc.methods);
-      let stub = null;
+      const stub = null;
       eval(`stub = proto.nested.${grpcUpstreamConf.pkg}`);
       services[grpcUpstreamConf.service] = {
         cfg: conf,
@@ -83,6 +89,7 @@ const runProxy = async (runConfig = {}) => {
         remote: stub,
         grpc: grpcUpstreamStr,
       };
+      return services;
     },
   );
 
@@ -96,7 +103,6 @@ const runProxy = async (runConfig = {}) => {
   const websocketHandler = (ws, req) => {
     const debugOn = typeof (runConfig.debug) !== 'undefined' && runConfig.debug === true;
     ws.on('message', (msg) => {
-
       // WARNING! Methods below is used in Eval
       // FIXME: Get rid of `eval` use, replace with dynamic loading
       // eslint-disable-next-line no-unused-vars
@@ -121,7 +127,7 @@ const runProxy = async (runConfig = {}) => {
 
       if (services[obj.service].methods.includes(obj.method) && typeof (obj.payload === 'object')) {
         if (typeof (obj.metadata) !== 'undefined') {
-          Object.keys(obj.metadata).forEach((name) => metadata.set(name, obj.metadata[name]));
+          Object.keys(obj.metadata).forEach(name => metadata.set(name, obj.metadata[name]));
         }
 
         const cmd = `client = new ${getSvcRemote(obj.service)}(${getSvcConnect(obj.service)}, grpc.credentials.createInsecure())`;
@@ -169,17 +175,16 @@ const runProxy = async (runConfig = {}) => {
     endpointsDescription.push(`        ${conf.wsSchema}://${upstreamUrl}  ->  ${endpointConf.wsSchema}://${endpointPathStr}${conf.filter ? '/[DYNAMIC RULES]' : conf.mountUrlPath}    ## WS Proxy`);
     endpointsDescription.push(`        ${conf.httpSchema}://${upstreamUrl}  ->  ${endpointConf.httpSchema}://${endpointPathStr}${conf.filter ? '/[DYNAMIC RULES]' : conf.mountUrlPath}    ## Web proxy`);
     if (webUpstreamConf.mountUrlPath) {
-
       httpServer.use(conf.filter || conf.mountUrlPath, expressProxy({
         ...conf,
         target: `${conf.httpSchema}://${upstreamUrl}`,
         changeOrigin: true,
         ws: true,
-        logProvider: (conf) => Logger({ ...conf, name: 'http-proxy-middleware', level: 'warn' }),
+        logProvider: logConf => Logger({ ...logConf, name: 'http-proxy-middleware', level: 'warn' }),
       }));
     }
   });
-  endpointsDescription.push(`Proxy ready:`);
+  endpointsDescription.push('Proxy ready:');
   endpointsDescription.push(`${endpointConf.httpSchema}://${endpointPathStr}`);
 
   /**
