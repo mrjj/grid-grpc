@@ -42,4 +42,4 @@ const makePath = (pathToCreate) => pathToCreate.split(path.sep).reduce(
   ''
 );
 
-module.exports = { promiseMap, addPrefixExt, makePath };
+module.exports = { addPrefixExt, makePath };
