@@ -3,6 +3,7 @@
 node_modules
 build
 dist
+./example/public/dist
 *.log
 .temp
 package-lock.jsom

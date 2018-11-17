@@ -1,4 +1,4 @@
-/* eslint-disable no-path-concat,prefer-template */
+/* eslint-disable no-path-concat,prefer-template,guard-for-in,no-restricted-syntax */
 /**
  * @fileOverview GRPC-browser proxy server example
  *
@@ -7,8 +7,9 @@
  */
 
 const grpc = require('grpc');
-const logger = require('../src/logger')({ name: 'grpc-example-server' });
+const async = require('async');
 
+const logger = require('../src/logger')({ name: 'grpc-example-server' });
 const grpcServer = require('../src/grpcServer');
 const grpcProxy = require('../src/grpcProxy');
 
@@ -18,11 +19,11 @@ const grpcProxy = require('../src/grpcProxy');
  */
 const copyMetadata = (call) => {
   const metadata = call.metadata.getMap();
-  const response_metadata = new grpc.Metadata();
-  for (let key in metadata) {
-    response_metadata.set(key, metadata[key]);
+  const responseMetadata = new grpc.Metadata();
+  for (const key in metadata) {
+    responseMetadata.set(key, metadata[key]);
   }
-  return response_metadata;
+  return responseMetadata;
 };
 
 /**
@@ -30,8 +31,9 @@ const copyMetadata = (call) => {
  * @param {function} callback
  */
 const echo = (call, callback) => {
+  console.log(call);
   callback(null, {
-    message: call.request.message
+    message: call.request.message,
   }, copyMetadata(call));
 };
 
@@ -42,7 +44,7 @@ const echo = (call, callback) => {
 const echoAbort = (call, callback) => {
   callback({
     code: grpc.status.ABORTED,
-    message: 'Aborted from server side.'
+    message: 'Aborted from server side.',
   });
 };
 
@@ -51,15 +53,15 @@ const echoAbort = (call, callback) => {
  */
 const serverStreamingEcho = (call) => {
   const senders = [];
-  const sender = (message, interval) => {
+
+  function sender(message, interval) {
     return (callback) => {
-      call.write({
-        message: message
-      });
-      _.delay(callback, interval);
+      call.write({ message });
+      window.setTimeout(callback, interval);
     };
-  };
-  for (let i = 0; i < call.request.message_count; i++) {
+  }
+
+  for (let i = 0; i < call.request.message_count; i += 1) {
     senders[i] = sender(call.request.message, call.request.message_interval);
   }
   async.series(senders, () => {
@@ -134,8 +136,10 @@ const CONF = {
  * sample server port
  */
 const main = async () => {
-  const grpc = grpcServer(GRPC_UPSTREAM_CONF).listen();
+  const grpcs = grpcServer(GRPC_UPSTREAM_CONF)
+    .listen();
   await grpcProxy(CONF);
+  process.on('exit', () => grpcs.kill());
 };
 
 

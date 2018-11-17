@@ -19,15 +19,14 @@
     "bin/grid-grpc"
   ],
   "scripts": {
-    "make:client:web": "grid-grpc gen -q ./example/echo.proto ./dist/grpcClient.js",
-    "dev": "node ./example/server.js",
+    "make:client:web": "bin/grid-grpc gen -q ./example/echo.proto ./example/public/dist/EchoServiceClient.js",
+    "dev": "npm run make:client:web ; node ./example/server.js",
     "test": "jest",
     "lint": "eslint src"
   },
   "dependencies": {
     "@grpc/proto-loader": "latest",
     "express": "4.16.4",
-    "express-ws": "4.0.0",
     "google-protobuf": "3.6.1",
     "grpc": "1.15.1",
     "helmet": "3.14.0",
@@ -40,6 +39,7 @@
     "pino": "5.8.0",
     "pino-pretty": "2.2.3",
     "protobufjs": "6.8.8",
+    "ws": "6.1.1",
     "yargs": "12.0.2"
   },
   "devDependencies": {
@@ -48,12 +48,12 @@
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "15.1.0",
     "eslint-plugin-babel": "5.2.1",
-    "eslint-plugin-react": "7.11.1",
     "eslint-plugin-eslint-comments": "^2.0.1",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-jest": "^21.5.0",
     "eslint-plugin-jsx-a11y": "6.1.2",
+    "eslint-plugin-react": "7.11.1",
     "jest": "23.6.0"
   },
   "bin": {

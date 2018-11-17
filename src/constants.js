@@ -6,7 +6,7 @@
  * @constant DEFAULT_ENDPOINT_CONF - Default endpoint config
  * @type {{
  *    host: string, port: number, tlsPort: number,
- *    httpSchema: string, wsSchema: string, grpcMountUrlPath: string
+ *    httpSchema: string, wsSchema: string, urlPath: string
  * }}
  */
 const DEFAULT_ENDPOINT_CONF = {
@@ -15,7 +15,7 @@ const DEFAULT_ENDPOINT_CONF = {
   tlsPort: 443,
   httpSchema: 'http',
   wsSchema: 'ws',
-  grpcMountUrlPath: '/grpc-ws',
+  urlPath: '/grpc-ws',
 };
 
 /**
@@ -57,7 +57,7 @@ const DEFAULT_GRPC_UPSTREAM_CONF = {
 const DEFAULT_CLI_CONFIG = {
   inputProtoFilePath: './proto/service.proto',
   outputJsFilePath: './dist/grpcClient.js',
-  protobufJsLibDistPath: './node_modules/protobufjs/dist/minimal/protobuf.min.js',
+  protobufJsLibDistPath: './node_modules/protobufjs/dist/protobuf.min.js',
   keepOldBuilds: false,
 };
 
