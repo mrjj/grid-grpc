@@ -20,6 +20,7 @@ const {DEFAULT_CLI_CONFIG} = require('../src/constants');
 const argv = Yargs
   .usage('$0 --quiet --keep-old-builds <cmd> [inputPath] [outputPath] [protobufJsLibDistPath]')
   .boolean('quiet').alias('q', 'quiet')
+  .boolean('pretty-print-json').alias('p', 'pretty-print-json')
   .boolean('keep-old-builds').alias('o', 'keep-old-builds')
   .command(
     'gen [inputPath] [outputPath] [protobufJsLibDistPath]',
@@ -43,7 +44,7 @@ const argv = Yargs
         })
     },
     async (argv) => {
-      const {inputPath, outputPath, protobufJsLibDistPath, quiet, keepOldBuilds} = argv
+      const {inputPath, outputPath, protobufJsLibDistPath, quiet, keepOldBuilds, prettyPrintJson} = argv
       if (quiet === true) {
         logger.level = 'info'
       } else {

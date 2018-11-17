@@ -1,6 +1,6 @@
 {
   "name": "grid-grpc",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": {
     "name": "Ilya Kutukov",
     "email": "post.ilya@gmail.com"
@@ -16,7 +16,6 @@
   "files": [
     "src/",
     "example/",
-    "proto/",
     "bin/grid-grpc"
   ],
   "scripts": {
@@ -44,9 +43,15 @@
     "yargs": "12.0.2"
   },
   "devDependencies": {
-    "eslint": "5.8.0",
-    "babel-eslint": "10.0.1",
-    "eslint-plugin-babel": "5.2.1"
+    "babel-eslint": "^8.2.3",
+    "babel-plugin-import": "^1.2.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "15.1.0",
+    "eslint-plugin-babel": "5.2.1",
+    "eslint-plugin-eslint-comments": "^2.0.1",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jasmine": "2.10.1",
+    "eslint-plugin-jest": "^21.5.0"
   },
   "bin": {
     "grid-grpc": "bin/grid-grpc"
