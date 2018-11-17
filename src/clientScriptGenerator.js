@@ -22,21 +22,31 @@ const TEMPLATE = `'use strict';
 /**
  * Generated code
  */
-const getClient = (options) => {
-  const { wsSchema, urlPath } = {
-    wsSchema: '{{wsSchema}}',
-    urlPath: '{{urlPath}}',
-    ...(options || {}),
-  };
-  return {
-{{services}}  };
-};
 
-if (window.module) {
-  module.exports = getClient;
-} else {
-  window.getClient = getClient;
-}
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(["jquery", "underscore"], factory);
+    } else if (typeof exports === "object") {
+        module.exports = factory(require("jquery"), require("underscore"));
+    } else {
+        root.GRPCClient = factory(root.$, root._);
+    }
+}(this, function ($, _) {
+    
+    // this is where I defined my module implementation
+    
+    const GRPCClient = (options) => {
+      const { wsSchema, urlPath } = {
+        wsSchema: '{{wsSchema}}',
+        urlPath: '{{urlPath}}',
+        ...(options || {}),
+      };
+      return {
+    {{services}}  };
+    };    
+
+    return GRPCClient
+}));
 `;
 const SERVICE_TEMPLATE = `    {{serviceName}}: {
 {{methods}}    },
@@ -123,7 +133,9 @@ const generateClientScript = async (
         .replace('`', '\\`')
       : JSON.stringify(root.toJSON())
         .replace('`', '\\`'),
-    library: fs.readFileSync(protobufJsLibDistPath).toString().replace(/ *\/\/.+\n/g, ''),
+    library: fs.readFileSync(protobufJsLibDistPath)
+      .toString()
+      .replace(/ *\/\/.+\n/g, ''),
   });
 };
 

@@ -19,7 +19,7 @@
   const grpcButton = document.querySelector('#grpcButton');
 
 
-  const EchoClient = getClient({});
+  const EchoClient = GRPCClient({});
 
   const showMessage = (message) => {
     messages.textContent += `\n${message}`;
