@@ -23,30 +23,22 @@ const TEMPLATE = `'use strict';
  * Generated code
  */
 
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(["jquery", "underscore"], factory);
-    } else if (typeof exports === "object") {
-        module.exports = factory(require("jquery"), require("underscore"));
-    } else {
-        root.GRPCClient = factory(root.$, root._);
-    }
-}(this, function ($, _) {
-    
-    // this is where I defined my module implementation
-    
-    const GRPCClient = (options) => {
-      const { wsSchema, urlPath } = {
-        wsSchema: '{{wsSchema}}',
-        urlPath: '{{urlPath}}',
-        ...(options || {}),
-      };
-      return {
-    {{services}}  };
-    };    
+const GRPCClient = (options) => {
+  const { wsSchema, urlPath } = {
+    wsSchema: '{{wsSchema}}',
+    urlPath: '{{urlPath}}',
+    ...(options || {}),
+  };
+  return {
+{{services}}  };
+};    
 
-    return GRPCClient
-}));
+
+if (typeof exports === 'object') {
+  module.exports = GRPCClient;
+} else {
+  window.GRPCClient = GRPCClient;
+}
 `;
 const SERVICE_TEMPLATE = `    {{serviceName}}: {
 {{methods}}    },
