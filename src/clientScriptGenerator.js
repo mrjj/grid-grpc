@@ -75,7 +75,7 @@ const searchService = (el = {}, services = {}) => {
   return services;
 };
 
-const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrint = false, defaultWsSchema = DEFAULT_ENDPOINT_CONF.wsSchema) => {
+const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrint = false, wsSchema = DEFAULT_ENDPOINT_CONF.wsSchema) => {
   Mustache.escape = (v) => v;
   const root = await protobuf.load(protoPath);
   const servicesDict = searchService(root);
@@ -94,7 +94,7 @@ const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrin
             metadata: JSON.stringify({}),
             requestType: method['requestType'],
             responseType: method['responseType'],
-            defaultWsSchema,
+            wsSchema,
           };
           methodsStr += Mustache.render(METHOD_TEMPLATE, view);
         }
@@ -107,7 +107,7 @@ const generateClientScript = async (protoPath, protobufJsLibDistPath, prettyPrin
   }
   return Mustache.render(TEMPLATE, {
     services: servicesStr,
-    defaultWsSchema: DEFAULT_ENDPOINT_CONF.wsSchema,
+    wsSchema: DEFAULT_ENDPOINT_CONF.wsSchema,
     grpcMountUrlPath: DEFAULT_ENDPOINT_CONF.grpcMountUrlPath,
     protoJSON: prettyPrint
       ? JSON.stringify(root.toJSON(), null, 2).split('\n').join('\n  ').replace('`', '\\`')
