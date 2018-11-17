@@ -57,8 +57,8 @@ const METHOD_TEMPLATE = `      {{methodName}}: (data) => new Promise(function(re
       }),
 `;
 const searchService = (el = {}, services = {}) => {
-  if (el && el.nested && el.nested.field) {
-    const f = el.nested.field;
+  if (el && el.nested) {
+    const f = el.nested;
     for (let field in f) {
       if (field !== 'parent') {
         if (f.hasOwnProperty(field)) {
