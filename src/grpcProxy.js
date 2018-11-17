@@ -76,13 +76,12 @@ const runProxy = async (runConfig = {}) => {
       ].join(''))
 
       const proto = protobuf.loadSync(grpcUpstreamConf.serviceProtoPath)
-      console.log('proto', proto);
       const servicesDict = searchServices(proto)
       const svc = servicesDict[grpcUpstreamConf.service]
       // noinspection JSUnusedLocalSymbols
       const methodNames = Object.keys(svc.methods)
       let stub = null
-      eval(`stub = proto.${grpcUpstreamConf.pkg}`)
+      eval(`stub = proto.nested.${grpcUpstreamConf.pkg}`)
       services[grpcUpstreamConf.service] = {
         cfg: conf,
         methods: conf.methods,
