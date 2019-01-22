@@ -26,14 +26,10 @@ const asPromiseFn = fn => async input => (new Promise(
     );
   },
 ));
-const promiseClientCall = (client, method, args) => new Promise((resolve, reject) => {
-  client[method](args, (e, res) => { if (e) { reject(e); } else { resolve(res); } });
-});
 
 const wait = timeMs => new Promise(resolve => setTimeout(resolve, timeMs));
 
 module.exports = {
-  promiseClientCall,
   asPromiseFn,
   cbHandlers,
   asCallbackFn,

@@ -1,14 +1,16 @@
 {
   "name": "grid-grpc",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "author": {
     "name": "Ilya Kutukov",
     "email": "post.ilya@gmail.com"
   },
   "description": "GRPC Grid service manager",
-  "private": true,
-  "license": "UNLICENSED",
+  "license": "Unlicense",
   "main": "./src/",
+  "bin": {
+    "grid-grpc": "bin/grid-grpc"
+  },
   "directories": {
     "protos": "protos"
   },
@@ -18,10 +20,11 @@
     "bin/grid-grpc"
   ],
   "scripts": {
-    "make:client:web": "bin/grid-grpc gen -q ./example/echo.proto ./example/public/dist/EchoServiceClient.js",
+    "build": "bin/grid-grpc gen -q ./example/echo.proto ./example/public/dist/EchoServiceClient.js",
+    "ci": "npm run build && npm run lint && npm run test",
     "dev": "npm run make:client:web ; node ./example/server.js",
-    "test": "jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "jest"
   },
   "dependencies": {
     "@grpc/proto-loader": "latest",
@@ -54,8 +57,5 @@
     "eslint-plugin-jsx-a11y": "6.1.2",
     "eslint-plugin-react": "7.11.1",
     "jest": "23.6.0"
-  },
-  "bin": {
-    "grid-grpc": "bin/grid-grpc"
   }
 }

@@ -42,4 +42,27 @@ const makePath = pathToCreate => pathToCreate.split(path.sep).reduce(
   '',
 );
 
-module.exports = { addPrefixExt, makePath };
+
+/**
+ * Promisify gRPC client call
+ * @param client
+ * @param methodName
+ * @param args
+ * @return {Promise<*>}
+ */
+const promiseClientCall = (
+  client,
+  methodName,
+  args,
+) => new Promise((resolve, reject) => {
+  if (!client[methodName]) {
+    throw new Error(
+      `method "${methodName || ''}" not found. Possible methods: ${
+        Object.keys(client).map(k => `"${k}"`).join(', ')}`,
+    );
+  }
+  client[methodName](args, (e, res) => { if (e) { reject(e); } else { resolve(res); } });
+});
+
+
+module.exports = { addPrefixExt, makePath, promiseClientCall };
