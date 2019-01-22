@@ -19,7 +19,7 @@ const { DEFAULT_CLI_CONFIG } = require('../src/constants');
 // noinspection JSUnusedLocalSymbols
 // eslint-disable-next-line no-unused-vars
 const argv = Yargs
-  .usage('$0 --quiet --keep-old-builds <cmd> [inputPath] [outputPath] [protobufJsLibDistPath]')
+  .usage('$0 --quiet --keep-old-builds <cmd> [inputPath] [outputPath]')
   .boolean('quiet')
   .alias('q', 'quiet')
   .boolean('pretty-print-json')
@@ -27,7 +27,7 @@ const argv = Yargs
   .boolean('keep-old-builds')
   .alias('o', 'keep-old-builds')
   .command(
-    'gen [inputPath] [outputPath] [protobufJsLibDistPath]',
+    'gen [inputPath] [outputPath]',
     'generate web client for GRPC based on .proto file',
     (yargs) => {
       yargs
@@ -40,18 +40,17 @@ const argv = Yargs
           type: 'string',
           default: DEFAULT_CLI_CONFIG.outputJsFilePath,
           describe: 'grpc .js client output path',
-        })
-        .positional('protobufJsLibDistPath', {
-          type: 'string',
-          default: DEFAULT_CLI_CONFIG.protobufJsLibDistPath,
-          describe: 'protobuf.min.js path',
         });
+        // .positional('protobufJsLibDistPath', {
+        //   type: 'string',
+        //   default: DEFAULT_CLI_CONFIG.protobufJsLibDistPath,
+        //   describe: 'protobuf.min.js path',
+        // });
     },
     async (argvCmd) => {
       const {
         inputPath,
         outputPath,
-        protobufJsLibDistPath,
         quiet,
         keepOldBuilds,
         prettyPrintJson,
@@ -63,15 +62,12 @@ const argv = Yargs
       }
       const fullInputPath = path.join(process.cwd(), inputPath);
       const fullOutputPath = path.join(process.cwd(), outputPath);
-      const fullProtobufJsLibDistPath = path.join(process.cwd(), protobufJsLibDistPath);
       logger.debug(`Making JS client: ${fullInputPath} -> ${fullOutputPath}`);
       makePath(path.dirname(fullOutputPath));
 
       /* Run */
       try {
-        logger.debug(`Building using protobufjs library file: ${fullProtobufJsLibDistPath}`);
-        const apiScript = await generateClientScript(
-          fullInputPath, fullProtobufJsLibDistPath, prettyPrintJson);
+        const apiScript = await generateClientScript(fullInputPath, prettyPrintJson);
         if (fs.existsSync(fullOutputPath)) {
           const prevPath = addPrefixExt(fullOutputPath, 'old');
           if (keepOldBuilds === true) {

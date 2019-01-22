@@ -8,7 +8,6 @@
  * https://github.com/ericbets/danby
  */
 
-const fs = require('fs');
 const protobuf = require('protobufjs');
 const Mustache = require('mustache');
 
@@ -78,7 +77,6 @@ const searchService = (el = {}, services = {}) => {
 
 const generateClientScript = async (
   protoPath,
-  protobufJsLibDistPath,
   prettyPrint = false,
   wsSchema = DEFAULT_ENDPOINT_CONF.wsSchema,
 ) => {
@@ -123,9 +121,6 @@ const generateClientScript = async (
         .replace('`', '\\`')
       : JSON.stringify(root.toJSON())
         .replace('`', '\\`'),
-    library: fs.readFileSync(protobufJsLibDistPath)
-      .toString()
-      .replace(/ *\/\/.+\n/g, ''),
   });
 };
 

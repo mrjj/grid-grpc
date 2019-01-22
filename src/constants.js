@@ -9,6 +9,7 @@
  *    httpSchema: string, wsSchema: string, urlPath: string
  * }}
  */
+const path = require('path');
 const DEFAULT_ENDPOINT_CONF = {
   host: 'localhost',
   port: 9001,
@@ -52,12 +53,11 @@ const DEFAULT_GRPC_UPSTREAM_CONF = {
 
 /**
  * @constant DEFAULT_CLI_CONFIG - Default cli config
- * @type {{inputProtoFilePath: string, outputJsFilePath: string, protobufJsLibDistPath: string}}
+ * @type {{inputProtoFilePath: string, outputJsFilePath: string}}
  */
 const DEFAULT_CLI_CONFIG = {
   inputProtoFilePath: './proto/service.proto',
   outputJsFilePath: './dist/grpcClient.js',
-  protobufJsLibDistPath: './node_modules/protobufjs/dist/protobuf.min.js',
   keepOldBuilds: false,
 };
 
