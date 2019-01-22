@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Express session demo</title>
+</head>
+<body>
+<button id="wsButton" type="button" title="Open WebSocket connection">
+    Open WebSocket connection
+</button>
+<button id="grpcButton" type="button" title="Send grpc message">
+    Send GRPC message
+</button>
+<pre id="messages" style="height: 400px; overflow: scroll"></pre>
+<script src="dist/EchoServiceClient.js"></script>
+<script>
+  const messages = document.querySelector('#messages');
+  const wsButton = document.querySelector('#wsButton');
+  const grpcButton = document.querySelector('#grpcButton');
+
+
+  const EchoClient = GRPCClient({});
+
+  const showMessage = (message) => {
+    messages.textContent += `\n${message}`;
+    messages.scrollTop = messages.scrollHeight;
+  };
+
+  let ws;
+
+  wsButton.onclick = () => {
+    if (ws) {
+      ws.onerror = ws.onopen = ws.onclose = null;
+      ws.close();
+    }
+
+    ws = new WebSocket(`ws://${location.host}`);
+    ws.onerror = () => showMessage('WebSocket error');
+    ws.onopen = () => showMessage('WebSocket connection established');
+    ws.onclose = () => showMessage('WebSocket connection closed');
+  };
+
+  grpcButton.onclick = () => EchoClient
+    .EchoService
+    .Echo({ message: 'test' })
+    .then(response => showMessage(`Response: ${JSON.stringify(response)}`))
+    .catch(err => showMessage(`ERROR: ${err}`));
+
+</script>
+</body>
+</html>
