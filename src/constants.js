@@ -9,7 +9,7 @@
  *    httpSchema: string, wsSchema: string, urlPath: string
  * }}
  */
-const path = require('path');
+
 const DEFAULT_ENDPOINT_CONF = {
   host: 'localhost',
   port: 9001,

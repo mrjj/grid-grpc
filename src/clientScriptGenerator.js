@@ -22,9 +22,19 @@ const TEMPLATE = `/**
  */
 
 const GRPCClient = (options) => {
-  const { wsSchema, urlPath } = {
+  if (typeof window === 'undefined') {
+      window = {
+        WebSocket: undefined, 
+        location : { port: 80, host: 'localhost', protocol: 'http:' }
+      };
+  }
+  const { wsSchema, urlPath, host, port, webSocketClass } = {
     wsSchema: '{{wsSchema}}',
     urlPath: '{{urlPath}}',
+    port: window.location.port,
+    host: window.location.host,
+    wsSchema: window.location.protocol === 'https:' ? 'wss:' : 'ws:',
+    webSocketClass: window.WebSocket,
     ...(options || {}),
   };
   return {
@@ -43,7 +53,7 @@ const SERVICE_TEMPLATE = `    {{serviceName}}: {
 `;
 
 const METHOD_TEMPLATE = `      {{methodName}}: (payload, metadata) => new Promise((resolve, reject) => {
-        const ws = new WebSocket(\`\${wsSchema\}://\${window.location.host\}\${urlPath}\`);
+        const ws = new webSocketClass(\`\${wsSchema\}://\${host\}\${port ? \`:\${port}\` : ''}\${urlPath}\`);
         ws.onopen = () => ws.send(JSON.stringify({
           service: '{{serviceName}}',
           method: '{{methodName}}',
