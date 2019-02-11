@@ -25,13 +25,13 @@ const GRPCClient = (options) => {
   if (typeof window === 'undefined') {
       window = {
         WebSocket: undefined, 
-        location : { port: 80, host: 'localhost', protocol: 'http:' }
+        location : { port: 80, hostname: 'localhost', host: 'localhost:80', protocol: 'http:' }
       };
   }
   const { wsSchema, urlPath, host, port, webSocketClass } = {
     urlPath: '{{urlPath}}',
     port: window.location.port,
-    host: window.location.host,
+    host: window.location.hostname,
     wsSchema: window.location.protocol === 'https:' ? 'wss:' : 'ws:',
     webSocketClass: window.WebSocket,
     ...(options || {}),
